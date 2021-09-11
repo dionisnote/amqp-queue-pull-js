@@ -1,6 +1,6 @@
 {
   "name": "@dionisnote/amqp-queue-pull-js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Pull for amqp's queues",
   "main": "build/index.js",
   "repository": {

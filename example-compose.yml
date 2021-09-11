@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  cars:
+    container_name: example-services
+    depends_on:
+      - rabbitmq
+    networks:
+      - main
+    build:
+      context: .
+      dockerfile: example.dockerfile
+    environment: 
+      - AMQP_HOST=amqp-host
+      - QUEUE_TRADE=trade-queue
+      - QUEUE_NOTIFY=notify-queue
+      - QUEUE_WAREHOUSE=warehouse-queue
+      - EXCHANGE_TRADE=trade-exchange
+      - EXCHANGE_NOTIFY=notify-exchange
+    command: bash -c "ls && ./run.sh"
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: amqp-host
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq/
+    ports:
+       - 15672:15672
+    networks:
+        - main
+networks:
+  main:

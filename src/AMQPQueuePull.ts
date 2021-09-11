@@ -9,9 +9,9 @@ class AMQPQueuePull {
   private isInited: boolean = false;
   private isReady: boolean = false;
 
-  async initPull(amqpUrl: string, channelOptions: ChannelOption[], waitMs: number = 1000 ) {
+  async initPull(amqpUrl: string, channelOptions: ChannelOption[], reconnectMs: number = 1000 ) {
     if (!this.isInited) {
-      await this.whenMQReady(amqpUrl, waitMs);
+      await this.whenMQReady(amqpUrl, reconnectMs);
       await initChannels(amqpUrl, channelOptions, amqp)
         .then((queuesList) => {
           this.queuesList = queuesList;
@@ -24,6 +24,13 @@ class AMQPQueuePull {
     return this;
   }
 
+  /**
+   * Sending message to exchange where queue were bound
+   * 
+   * @param queueName - name of queue
+   * @param action    - action is like messages group id, it uses to subscribe 
+   * @param data      - data to send
+   */
   public async send(queueName: string, action, data) {
     const queue = await this.get(queueName);
     if (queue) {
@@ -31,6 +38,14 @@ class AMQPQueuePull {
     }
   }
 
+    /**
+   * Subscribe to messages in queue. 
+   * 
+   * @param queueName - name of queue
+   * @param action    - action is like messages group id.
+   * @param data      - sended data
+   * 
+   */
   public async on(queueName: string, action: string, cb) {
     const queue = await this.get(queueName);
     if (queue) {
